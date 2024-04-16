@@ -8,11 +8,11 @@
 #include <chrono>
 #include <fstream>
 
-struct StringCompare
+struct InverseStringCompare
 {
     bool operator () (const std::string& s_left, const std::string& s_right)
     {
-        return s_left.length() < s_right.length();
+        return s_left.length() >= s_right.length();
     }
 };
 
@@ -27,23 +27,24 @@ void WarAndPeaceTest()
     size_t find = 0;
     long long count_words = 0;
     auto start = std::chrono::steady_clock::now();
-    std::vector<std::string> allWords;
+    HeapPriorityQueue<std::string, std::vector<std::string>, InverseStringCompare> q;
     while (getline(ifs, line))
     {
         find = 0;
+
         while (find != std::string::npos)
         {
             find = line.find_first_of({ ',', ' ', '.', '!', '?', ':', ';', '"', '(', ')', '*' }, ind);
-            if (ind != find)
+            std::string s = line.substr(ind, find - ind);
+            if (!s.empty())
             {
-                allWords.push_back(line.substr(ind, find - ind));
+                q.push(s);
+                if (q.size() > 20) q.pop();
                 ++count_words;
             }
             ind = find + 1;
         }
     }
-    
-    HeapPriorityQueue<std::string, std::vector<std::string>, StringCompare> q(allWords);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "Поиск 20 самых длинных слов: " << elapsed_seconds.count() << " ms" << std::endl;

@@ -31,7 +31,7 @@ public:
 		_size++;
 	}
 	T top() const {
-		return vector.front();
+		return vector[0];
 	}
 	void pop()
 	{
@@ -41,20 +41,21 @@ public:
 		}
 
 	}
-	void print()
+	void print() const
 	{
 		std::copy(vector.cbegin(), vector.cend(), std::ostream_iterator<T>(std::cout, " "));
 		std::cout << std::endl;
 	}
-	PriorityQueue merge(PriorityQueue<T>& q) const
+	static PriorityQueue merge(const PriorityQueue<T>& q1, const PriorityQueue<T>& q2)
 	{
 		PriorityQueue newQueue = new PriorityQueue();
-		for (T x : vector) {
-			push(x);
+		for (const T& x : q1.vector) {
+			newQueue.push(x);
 		}
-		for (T x : q.vector) {
-			push(x);
+		for (const T& x : q2.vector) {
+			newQueue.push(x);
 		}
+		return newQueue;
 	}
 	size_t size() const {
 		return _size;
